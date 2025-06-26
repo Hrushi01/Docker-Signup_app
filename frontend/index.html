@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" type="text/css" />
+    <title>Home Page</title>
+  </head>
+  <body>
+    <h1>Hi student, Welcome to XYZ University!</h1>
+    <p>
+      You can sign up to the platform to access all important notes & lectures.
+    </p>
+
+    <form
+      action="http://localhost:5050/addUser"
+      method="POST"
+      target="_blank"
+      id="signupForm"
+    >
+      <div class="field">
+        <label for="email">Email: </label>
+        <input type="text" placeholder="jane@email.com" name="email" />
+      </div>
+      <div class="field">
+        <label for="username">Username: </label>
+        <input type="text" placeholder="Jane Doe" name="username" />
+      </div>
+      <div class="field">
+        <label for="password">Password: </label>
+        <input type="password" placeholder="password" name="password" />
+      </div>
+
+      <button id="formBtn">Create Account</button>
+    </form>
+
+    <h2>Registered Users</h2>
+    <table border="1" id="userTable">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Username</th>
+          <th>Password</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Users will be populated here -->
+      </tbody>
+    </table>
+
+    <script>
+      async function fetchUsers() {
+        const res = await fetch("http://localhost:5050/getUsers");
+        const users = await res.json();
+        const tableBody = document.querySelector("#userTable tbody");
+        tableBody.innerHTML = "";
+
+        users.forEach((user) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td>${user.email}</td>
+          <td>${user.username}</td>
+          <td>${user.password}</td>
+          <td><button onclick="deleteUser('${user._id}')">Delete</button></td>
+        `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      async function deleteUser(id) {
+        await fetch(`http://localhost:5050/deleteUser/${id}`, {
+          method: "DELETE",
+        });
+        fetchUsers(); // Refresh table
+      }
+
+      // Initial fetch
+      fetchUsers();
+    </script>
+  </body>
+</html>
